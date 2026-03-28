@@ -25,11 +25,6 @@ export default async function HomePage({ params }: Props) {
       <SiteHeader />
       <main>
         <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-          <header className="mb-12 border-b border-rose-200/50 pb-6 sm:mb-14">
-            <h1 className="font-display max-w-2xl text-2xl font-semibold tracking-tight text-rose-950 sm:text-3xl">
-              {t("catalogTitle")}
-            </h1>
-          </header>
           {catalog.flowers.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-rose-200/90 bg-white/60 px-6 py-14 text-center text-stone-600">
               {t("empty")}
