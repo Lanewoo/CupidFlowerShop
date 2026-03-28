@@ -7,6 +7,15 @@ export { SESSION_COOKIE };
 
 export const SESSION_MAX_SEC = 60 * 60 * 24 * 7;
 
+/**
+ * `Secure` cookies are not stored over plain HTTP. On a VPS served as http://IP:3000,
+ * set AUTH_COOKIE_INSECURE=1 in .env.production so login works.
+ */
+export function sessionCookieSecure(): boolean {
+  if (process.env.AUTH_COOKIE_INSECURE === "1") return false;
+  return process.env.NODE_ENV === "production";
+}
+
 /** Browser cookie: production keeps you signed in for a week; dev uses a session cookie (cleared when the browser closes). */
 export function newSessionCookieAttributes(): {
   httpOnly: boolean;
@@ -18,7 +27,7 @@ export function newSessionCookieAttributes(): {
   const base = {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
   };
   if (process.env.NODE_ENV === "production") {
