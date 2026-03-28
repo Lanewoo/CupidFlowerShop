@@ -203,7 +203,10 @@ export function AdminPanel() {
                     alt=""
                     fill
                     className="object-cover"
-                    unoptimized={flower.image.startsWith("http")}
+                    unoptimized={
+                      flower.image.startsWith("http") ||
+                      flower.image.startsWith("/uploads/")
+                    }
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-rose-300">

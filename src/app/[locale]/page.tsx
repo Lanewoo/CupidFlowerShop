@@ -35,7 +35,7 @@ export default async function HomePage({ params }: Props) {
               {t("empty")}
             </p>
           ) : (
-            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
               {catalog.flowers.map((flower) => (
                 <li key={flower.id}>
                   <FlowerCard flower={flower} locale={locale} />
