@@ -1,26 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { Flower, FlowerCatalog } from "@/lib/types";
 import { flowerImageSrc, flowerImageUnoptimized } from "@/lib/flower-image";
 
-/** randomUUID() is only available in secure contexts (HTTPS / localhost); HTTP IP deploys need a fallback. */
-function newFlowerId(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    try {
-      return crypto.randomUUID();
-    } catch {
-      /* non-secure context */
-    }
+function randomHex(nBytes: number): string {
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const a = new Uint8Array(nBytes);
+    crypto.getRandomValues(a);
+    return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
   }
-  return `flower-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}`;
 }
 
-function emptyFlower(): Flower {
+/** randomUUID() is only available in secure contexts (HTTPS / localhost); HTTP IP deploys need a fallback. */
+function newFlowerId(existing: Set<string>): string {
+  for (let i = 0; i < 24; i++) {
+    let id = "";
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      try {
+        id = crypto.randomUUID();
+      } catch {
+        id = "";
+      }
+    }
+    if (!id) {
+      id = `flower-${Date.now()}-${randomHex(8)}`;
+    }
+    if (!existing.has(id)) {
+      existing.add(id);
+      return id;
+    }
+  }
+  const fallback = `flower-${Date.now()}-${randomHex(8)}-${randomHex(8)}`;
+  existing.add(fallback);
+  return fallback;
+}
+
+function createEmptyFlower(existing: Set<string>): Flower {
   return {
-    id: newFlowerId(),
+    id: newFlowerId(existing),
     image: "",
     names: { zh: "", en: "", hu: "" },
     priceHint: { zh: "", en: "", hu: "" },
@@ -34,16 +55,32 @@ export function AdminPanel() {
     "idle",
   );
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const catalogRef = useRef<FlowerCatalog | null>(null);
+  const opQueueRef = useRef(Promise.resolve());
+
+  useEffect(() => {
+    catalogRef.current = catalog;
+  }, [catalog]);
+
+  function runSerialized<T>(fn: () => Promise<T>): Promise<T> {
+    const run = opQueueRef.current.then(() => fn());
+    opQueueRef.current = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setStatus("loading");
       try {
-        const res = await fetch("/api/flowers");
+        const res = await fetch("/api/flowers", { credentials: "include" });
         if (!res.ok) throw new Error("load");
         const data = (await res.json()) as FlowerCatalog;
         if (!cancelled) {
+          catalogRef.current = data;
           setCatalog(data);
           setStatus("idle");
         }
@@ -51,6 +88,7 @@ export function AdminPanel() {
         if (!cancelled) {
           setStatus("error");
           setCatalog(null);
+          catalogRef.current = null;
         }
       }
     })();
@@ -58,18 +96,6 @@ export function AdminPanel() {
       cancelled = true;
     };
   }, []);
-
-  const updateFlower = (id: string, patch: Partial<Flower>) => {
-    setCatalog((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        flowers: prev.flowers.map((f) =>
-          f.id === id ? { ...f, ...patch } : f,
-        ),
-      };
-    });
-  };
 
   const updateName = (
     id: string,
@@ -114,50 +140,89 @@ export function AdminPanel() {
   };
 
   const addFlower = () => {
-    setCatalog((prev) =>
-      prev
-        ? { ...prev, flowers: [...prev.flowers, emptyFlower()] }
-        : { updatedAt: new Date().toISOString(), flowers: [emptyFlower()] },
-    );
+    setCatalog((prev) => {
+      if (prev) {
+        const ids = new Set(prev.flowers.map((f) => f.id));
+        return {
+          ...prev,
+          flowers: [...prev.flowers, createEmptyFlower(ids)],
+        };
+      }
+      const ids = new Set<string>();
+      return {
+        updatedAt: new Date().toISOString(),
+        flowers: [createEmptyFlower(ids)],
+      };
+    });
   };
 
   const uploadImage = async (id: string, file: File) => {
-    setUploadingId(id);
     setStatus("idle");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: fd,
+      await runSerialized(async () => {
+        setUploadingId(id);
+        try {
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: fd,
+            credentials: "include",
+          });
+          if (!res.ok) throw new Error("upload");
+          const data = (await res.json()) as { url: string };
+
+          const prev = catalogRef.current;
+          if (!prev) throw new Error("no catalog");
+
+          const next: FlowerCatalog = {
+            ...prev,
+            flowers: prev.flowers.map((f) =>
+              f.id === id ? { ...f, image: data.url } : f,
+            ),
+          };
+          catalogRef.current = next;
+          setCatalog(next);
+
+          const saveRes = await fetch("/api/flowers", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(next),
+          });
+          if (!saveRes.ok) throw new Error("save");
+          const saved = (await saveRes.json()) as FlowerCatalog;
+          catalogRef.current = saved;
+          setCatalog(saved);
+        } finally {
+          setUploadingId(null);
+        }
       });
-      if (!res.ok) throw new Error("upload");
-      const data = (await res.json()) as { url: string };
-      updateFlower(id, { image: data.url });
+      setStatus("saved");
+      setTimeout(() => setStatus("idle"), 2000);
     } catch {
       setStatus("error");
-    } finally {
       setUploadingId(null);
     }
   };
 
   const save = async () => {
-    if (!catalog) {
-      setStatus("error");
-      return;
-    }
     setStatus("saving");
     try {
-      const res = await fetch("/api/flowers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(catalog),
+      await runSerialized(async () => {
+        const snap = catalogRef.current;
+        if (!snap) throw new Error("no catalog");
+        const res = await fetch("/api/flowers", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(snap),
+        });
+        if (!res.ok) throw new Error("save");
+        const saved = (await res.json()) as FlowerCatalog;
+        catalogRef.current = saved;
+        setCatalog(saved);
       });
-      if (!res.ok) throw new Error("save");
-      const saved = (await res.json()) as FlowerCatalog;
-      setCatalog(saved);
       setStatus("saved");
       setTimeout(() => setStatus("idle"), 2000);
     } catch {

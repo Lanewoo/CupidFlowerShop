@@ -1,6 +1,6 @@
-import Image from "next/image";
 import type { Flower, LocaleCode } from "@/lib/types";
 import { flowerImageSrc, flowerImageUnoptimized } from "@/lib/flower-image";
+import { FlowerCardImage } from "./FlowerCardImage";
 import { OrderButton } from "./OrderButton";
 
 type Props = {
@@ -19,14 +19,12 @@ export function FlowerCard({ flower, locale }: Props) {
     <article className="group overflow-hidden rounded-2xl border border-rose-200/70 bg-white shadow-md shadow-rose-900/[0.06] transition hover:-translate-y-0.5 hover:border-rose-300/80 hover:shadow-lg hover:shadow-rose-900/[0.08]">
       <div className="relative aspect-[8/5] w-full min-h-0 overflow-hidden bg-rose-50/80">
         {flower.image ? (
-          <Image
+          <FlowerCardImage
             src={imageSrc}
             alt={name}
-            fill
-            className="object-cover transition duration-500 group-hover:scale-[1.03]"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized={unoptimized}
-            priority={false}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-rose-400">
