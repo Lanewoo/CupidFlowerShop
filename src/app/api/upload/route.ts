@@ -4,6 +4,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { ensureUploadsDir } from "@/lib/flowers";
 import { getServerSession } from "@/lib/session";
+import { flowerFilenameToMediaUrl } from "@/lib/uploaded-flower-media";
 
 export const runtime = "nodejs";
 
@@ -57,6 +58,5 @@ export async function POST(request: Request) {
   const fullPath = path.join(uploadDir, filename);
   await fs.writeFile(fullPath, buffer);
 
-  const publicPath = `/uploads/flowers/${filename}`;
-  return NextResponse.json({ url: publicPath });
+  return NextResponse.json({ url: flowerFilenameToMediaUrl(filename) });
 }
