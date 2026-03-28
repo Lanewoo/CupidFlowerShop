@@ -1,0 +1,47 @@
+{
+  "updatedAt": "2026-03-28T00:00:00.000Z",
+  "flowers": [
+    {
+      "id": "seed-1",
+      "image": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=900&q=80",
+      "names": {
+        "zh": "晨曦玫瑰",
+        "en": "Dawn Roses",
+        "hu": "Hajnal rózsák"
+      },
+      "priceHint": {
+        "zh": "¥168 起",
+        "en": "From $24",
+        "hu": "6680 Ft-tól"
+      }
+    },
+    {
+      "id": "seed-2",
+      "image": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900&q=80",
+      "names": {
+        "zh": "春日郁金香",
+        "en": "Spring Tulips",
+        "hu": "Tavaszi tulipánok"
+      },
+      "priceHint": {
+        "zh": "¥128 起",
+        "en": "From $18",
+        "hu": "5080 Ft-tól"
+      }
+    },
+    {
+      "id": "seed-3",
+      "image": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=900&q=80",
+      "names": {
+        "zh": "森林系绿植花礼",
+        "en": "Woodland bouquet",
+        "hu": "Erdei csokor"
+      },
+      "priceHint": {
+        "zh": "¥198 起",
+        "en": "From $27",
+        "hu": "7880 Ft-tól"
+      }
+    }
+  ]
+}

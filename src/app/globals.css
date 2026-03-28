@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+/* 更轻的底：少一层粉雾，把「氛围」留给英雄区与留白 */
+.store-backdrop {
+  background:
+    radial-gradient(
+      1000px 520px at 78% -8%,
+      rgba(254, 205, 211, 0.55) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      800px 480px at -5% 102%,
+      rgba(22, 163, 74, 0.06) 0%,
+      transparent 52%
+    ),
+    linear-gradient(180deg, #fffefb 0%, #fff5f7 55%, #fef2f4 100%);
+}
+
+body {
+  font-family: var(--font-sans), var(--font-noto-sc), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-noto-sc), Georgia, serif;
+}
