@@ -58,7 +58,11 @@ if [ ! -f .env.production ] && [ ! -f .env.local ]; then
   echo "提示：未找到 .env.production，请 cp .env.example .env.production 并设置 AUTH_SECRET"
 fi
 
-npm ci
+# 若已 export NODE_ENV=production，npm ci 会跳过 devDependencies，导致 next build 失败
+(
+  unset NODE_ENV
+  npm ci
+)
 NODE_ENV=production npm run build
 
 echo ""
