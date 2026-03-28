@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       "consumer",
     );
     const res = NextResponse.json({ ok: true, redirect: target });
-    res.cookies.set(SESSION_COOKIE, token, newSessionCookieAttributes());
+    res.cookies.set(SESSION_COOKIE, token, newSessionCookieAttributes(request));
     return res;
   } catch (e) {
     const code = e instanceof Error ? e.message : "unknown";

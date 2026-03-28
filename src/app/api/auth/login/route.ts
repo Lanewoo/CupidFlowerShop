@@ -82,6 +82,6 @@ export async function POST(request: Request) {
   );
 
   const res = NextResponse.json({ ok: true, redirect: target });
-  res.cookies.set(SESSION_COOKIE, token, newSessionCookieAttributes());
+  res.cookies.set(SESSION_COOKIE, token, newSessionCookieAttributes(request));
   return res;
 }
