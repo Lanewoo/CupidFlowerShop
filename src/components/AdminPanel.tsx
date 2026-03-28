@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import type { Flower, FlowerCatalog } from "@/lib/types";
-import { flowerImageSrc, flowerImageUnoptimized } from "@/lib/flower-image";
+import { AdminFlowerPreview } from "./AdminFlowerPreview";
 
 function randomHex(nBytes: number): string {
   if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
@@ -55,6 +54,7 @@ export function AdminPanel() {
     "idle",
   );
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const catalogRef = useRef<FlowerCatalog | null>(null);
   const opQueueRef = useRef(Promise.resolve());
 
@@ -158,6 +158,7 @@ export function AdminPanel() {
 
   const uploadImage = async (id: string, file: File) => {
     setStatus("idle");
+    setErrorDetail(null);
     try {
       await runSerialized(async () => {
         setUploadingId(id);
@@ -169,8 +170,21 @@ export function AdminPanel() {
             body: fd,
             credentials: "include",
           });
-          if (!res.ok) throw new Error("upload");
-          const data = (await res.json()) as { url: string };
+          const payload = (await res.json().catch(() => ({}))) as {
+            url?: string;
+            error?: string;
+          };
+          if (!res.ok) {
+            const msg =
+              typeof payload.error === "string"
+                ? payload.error
+                : t("uploadError");
+            throw new Error(msg);
+          }
+          if (typeof payload.url !== "string") {
+            throw new Error(t("uploadError"));
+          }
+          const data = { url: payload.url };
 
           const prev = catalogRef.current;
           if (!prev) throw new Error("no catalog");
@@ -200,8 +214,9 @@ export function AdminPanel() {
       });
       setStatus("saved");
       setTimeout(() => setStatus("idle"), 2000);
-    } catch {
+    } catch (e) {
       setStatus("error");
+      setErrorDetail(e instanceof Error ? e.message : t("uploadError"));
       setUploadingId(null);
     }
   };
@@ -227,6 +242,7 @@ export function AdminPanel() {
       setTimeout(() => setStatus("idle"), 2000);
     } catch {
       setStatus("error");
+      setErrorDetail(t("error"));
     }
   };
 
@@ -264,13 +280,7 @@ export function AdminPanel() {
               </p>
               <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-xl bg-rose-50">
                 {flower.image ? (
-                  <Image
-                    src={flowerImageSrc(flower.image)}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    unoptimized={flowerImageUnoptimized(flower.image)}
-                  />
+                  <AdminFlowerPreview key={flower.image} rawSrc={flower.image} />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-rose-300">
                     —
@@ -354,7 +364,9 @@ export function AdminPanel() {
           <span className="text-sm font-medium text-rose-700">{t("saved")}</span>
         )}
         {status === "error" && (
-          <span className="text-sm font-medium text-rose-600">{t("error")}</span>
+          <span className="max-w-md text-sm font-medium text-rose-600">
+            {errorDetail ?? t("error")}
+          </span>
         )}
       </div>
 

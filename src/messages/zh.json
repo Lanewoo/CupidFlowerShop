@@ -117,6 +117,8 @@
     "imageLabel": "图片",
     "upload": "上传新图",
     "uploading": "上传中…",
+    "uploadError": "上传失败，请重试或换一张 JPG/PNG/GIF/WebP。",
+    "imageBrokenHint": "无法加载，请重新上传",
     "nameZh": "中文名称",
     "nameEn": "英文名称",
     "nameHu": "匈牙利文名称",

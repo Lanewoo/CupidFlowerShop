@@ -117,6 +117,8 @@
     "imageLabel": "Image",
     "upload": "Upload new photo",
     "uploading": "Uploading…",
+    "uploadError": "Upload failed. Try another JPG, PNG, GIF, or WebP file.",
+    "imageBrokenHint": "Could not load — upload again",
     "nameZh": "Name (Chinese)",
     "nameEn": "Name (English)",
     "nameHu": "Name (Hungarian)",

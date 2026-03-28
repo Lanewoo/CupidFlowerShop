@@ -117,6 +117,8 @@
     "imageLabel": "Kép",
     "upload": "Új fotó feltöltése",
     "uploading": "Feltöltés…",
+    "uploadError": "A feltöltés sikertelen. Próbáljon JPG, PNG, GIF vagy WebP fájlt.",
+    "imageBrokenHint": "Nem töltődik be — töltse fel újra",
     "nameZh": "Név (kínai)",
     "nameEn": "Név (angol)",
     "nameHu": "Név (magyar)",
