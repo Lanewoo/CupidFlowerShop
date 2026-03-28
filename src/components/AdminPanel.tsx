@@ -5,9 +5,21 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { Flower, FlowerCatalog } from "@/lib/types";
 
+/** randomUUID() is only available in secure contexts (HTTPS / localhost); HTTP IP deploys need a fallback. */
+function newFlowerId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      /* non-secure context */
+    }
+  }
+  return `flower-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
 function emptyFlower(): Flower {
   return {
-    id: crypto.randomUUID(),
+    id: newFlowerId(),
     image: "",
     names: { zh: "", en: "", hu: "" },
     priceHint: { zh: "", en: "", hu: "" },
