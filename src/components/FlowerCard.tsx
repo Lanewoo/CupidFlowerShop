@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Flower, LocaleCode } from "@/lib/types";
+import { flowerImageSrc, flowerImageUnoptimized } from "@/lib/flower-image";
 import { OrderButton } from "./OrderButton";
 
 type Props = {
@@ -11,16 +12,15 @@ export function FlowerCard({ flower, locale }: Props) {
   const loc = (["zh", "en", "hu"].includes(locale) ? locale : "zh") as LocaleCode;
   const name = flower.names[loc] || flower.names.zh;
   const price = flower.priceHint[loc] || flower.priceHint.zh;
-  const remote = flower.image.startsWith("http");
-  const upload = flower.image.startsWith("/uploads/");
-  const unoptimized = remote || upload;
+  const imageSrc = flowerImageSrc(flower.image);
+  const unoptimized = flowerImageUnoptimized(flower.image);
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-rose-200/70 bg-white shadow-md shadow-rose-900/[0.06] transition hover:-translate-y-0.5 hover:border-rose-300/80 hover:shadow-lg hover:shadow-rose-900/[0.08]">
       <div className="relative aspect-[8/5] w-full min-h-0 overflow-hidden bg-rose-50/80">
         {flower.image ? (
           <Image
-            src={flower.image}
+            src={imageSrc}
             alt={name}
             fill
             className="object-cover transition duration-500 group-hover:scale-[1.03]"

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { Flower, FlowerCatalog } from "@/lib/types";
+import { flowerImageSrc, flowerImageUnoptimized } from "@/lib/flower-image";
 
 /** randomUUID() is only available in secure contexts (HTTPS / localhost); HTTP IP deploys need a fallback. */
 function newFlowerId(): string {
@@ -199,14 +200,11 @@ export function AdminPanel() {
               <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-xl bg-rose-50">
                 {flower.image ? (
                   <Image
-                    src={flower.image}
+                    src={flowerImageSrc(flower.image)}
                     alt=""
                     fill
                     className="object-cover"
-                    unoptimized={
-                      flower.image.startsWith("http") ||
-                      flower.image.startsWith("/uploads/")
-                    }
+                    unoptimized={flowerImageUnoptimized(flower.image)}
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-rose-300">
