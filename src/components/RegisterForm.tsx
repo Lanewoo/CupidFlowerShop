@@ -79,10 +79,14 @@ export function RegisterForm({ locale, redirect }: Props) {
         className="space-y-5"
       >
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-register-email"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("email")}
           </label>
           <input
+            id="consumer-register-email"
             type="email"
             name="register-email"
             autoComplete="email"
@@ -95,10 +99,14 @@ export function RegisterForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-register-phone"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("phone")}
           </label>
           <input
+            id="consumer-register-phone"
             type="tel"
             name="register-phone"
             autoComplete="tel"
@@ -112,10 +120,14 @@ export function RegisterForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-register-address"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("address")}
           </label>
           <textarea
+            id="consumer-register-address"
             name="register-address"
             autoComplete="street-address"
             value={address}
@@ -129,10 +141,14 @@ export function RegisterForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-register-password"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("password")}
           </label>
           <input
+            id="consumer-register-password"
             type="password"
             name="register-password"
             autoComplete="new-password"
@@ -146,10 +162,14 @@ export function RegisterForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-register-password2"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("confirmPassword")}
           </label>
           <input
+            id="consumer-register-password2"
             type="password"
             name="register-password2"
             autoComplete="new-password"

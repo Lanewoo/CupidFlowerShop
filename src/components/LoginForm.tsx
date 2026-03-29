@@ -63,10 +63,14 @@ export function LoginForm({ locale, redirect }: Props) {
         className="space-y-5"
       >
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-login-email"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("email")}
           </label>
           <input
+            id="consumer-login-email"
             type="email"
             name="login-email"
             autoComplete="email"
@@ -79,10 +83,14 @@ export function LoginForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="consumer-login-password"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("password")}
           </label>
           <input
+            id="consumer-login-password"
             type="password"
             name="login-password"
             autoComplete="current-password"

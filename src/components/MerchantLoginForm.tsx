@@ -65,10 +65,14 @@ export function MerchantLoginForm({ locale, redirect }: Props) {
         className="space-y-5"
       >
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="merchant-login-username"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("username")}
           </label>
           <input
+            id="merchant-login-username"
             type="text"
             name="admin-username"
             autoComplete="username"
@@ -81,10 +85,14 @@ export function MerchantLoginForm({ locale, redirect }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-800">
+          <label
+            htmlFor="merchant-login-password"
+            className="block text-sm font-medium text-stone-800"
+          >
             {t("password")}
           </label>
           <input
+            id="merchant-login-password"
             type="password"
             name="admin-password"
             autoComplete="current-password"
